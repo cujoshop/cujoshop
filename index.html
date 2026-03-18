@@ -1,0 +1,1484 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Pet Shop</title>
+    <link rel="icon" href="logo.png" type="image/png" />
+
+    <style>
+      body {
+        font-family: Arial;
+        margin: 0;
+        background: #f5f5f5;
+      }
+
+      /* HEADER */
+      header {
+        background: #ed7144;
+        color: white;
+        padding: 15px;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+      }
+
+      nav {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .logo {
+        font-size: 24px;
+        font-weight: bold;
+      }
+
+      .menu {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        flex-wrap: wrap;
+      }
+
+      .menu a {
+        color: white;
+        text-decoration: none;
+        font-weight: 500;
+      }
+
+      /* DROPDOWN MENU */
+      select {
+        padding: 7px;
+        border-radius: 5px;
+        border: none;
+        cursor: pointer;
+        font-size: 14px;
+        outline: none;
+      }
+
+      /* CART BUTTON */
+      .cart-btn {
+        background: white;
+        color: #ed7144;
+        padding: 8px 15px;
+        border-radius: 20px;
+        font-weight: bold;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        transition: 0.3s;
+      }
+
+      .cart-btn:hover {
+        background: #ffe3d8;
+      }
+
+      .cart-badge {
+        background: #ff5722;
+        color: white;
+        border-radius: 50%;
+        padding: 2px 8px;
+        font-size: 12px;
+      }
+
+      /* BANNER */
+      .banner {
+        height: 420px;
+        background: url("https://images.unsplash.com/photo-1548199973-03cce0bbc87b")
+          center/cover;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 45px;
+        font-weight: bold;
+        text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+      }
+
+      /* FILTER SECTION */
+      .filter-container {
+        background: white;
+        padding: 20px;
+        margin: 20px 50px;
+        border-radius: 10px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        display: flex;
+        gap: 20px;
+        justify-content: center;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+
+      .filter-container select,
+      .filter-container button {
+        padding: 10px 15px;
+        font-size: 16px;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+      }
+
+      /* PRICE SLIDER */
+      .price-slider-wrapper {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 16px;
+        font-weight: bold;
+        color: #333;
+      }
+
+      input[type="range"] {
+        width: 250px;
+        cursor: pointer;
+        accent-color: #ff7f50;
+      }
+
+      .filter-container button {
+        background: #ff7f50;
+        color: white;
+        border: none;
+        font-weight: bold;
+        cursor: pointer;
+        transition: 0.3s;
+      }
+
+      .filter-container button:hover {
+        background: #ff5722;
+      }
+
+      /* SECTION */
+      .section {
+        padding: 50px;
+        text-align: center;
+      }
+
+      .section h2 {
+        margin-bottom: 30px;
+      }
+
+      /* PRODUCTS */
+      .products {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 25px;
+      }
+
+      .card {
+        background: white;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        transition: 0.3s;
+      }
+
+      .card:hover {
+        transform: scale(1.05);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+      }
+
+      .card img {
+        width: 100%;
+        height: 300px;
+        object-fit: cover;
+        border-top-left-radius: 15px;
+        border-top-right-radius: 15px;
+      }
+
+      .card h3 {
+        margin: 10px;
+      }
+
+      .card p {
+        color: #ff5722;
+        font-weight: bold;
+      }
+
+      .card button {
+        background: #ff7f50;
+        color: white;
+        border: none;
+        padding: 10px 15px;
+        margin-bottom: 15px;
+        cursor: pointer;
+        border-radius: 5px;
+      }
+
+      .card button:hover {
+        background: #ff5722;
+      }
+
+      /* FOOTER */
+      footer {
+        background: #222;
+        color: white;
+        padding: 30px;
+        text-align: center;
+        margin-top: 40px;
+      }
+
+      .social a {
+        color: white;
+        margin: 10px;
+        text-decoration: none;
+      }
+
+      /* CART MODAL CSS */
+      #cart-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 999;
+      }
+
+      #cart-modal {
+        display: none;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: white;
+        width: 90%;
+        max-width: 500px;
+        max-height: 80vh;
+        border-radius: 10px;
+        z-index: 1000;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        display: flex;
+        flex-direction: column;
+      }
+
+      .cart-header {
+        padding: 15px 20px;
+        border-bottom: 1px solid #eee;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .cart-header h2 {
+        margin: 0;
+        font-size: 20px;
+      }
+
+      .close-btn {
+        cursor: pointer;
+        font-size: 24px;
+        font-weight: bold;
+        color: #888;
+      }
+      .close-btn:hover {
+        color: #333;
+      }
+
+      .cart-body {
+        padding: 20px;
+        overflow-y: auto;
+        flex-grow: 1;
+      }
+
+      .cart-item {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        margin-bottom: 15px;
+        padding-bottom: 15px;
+        border-bottom: 1px dashed #ddd;
+      }
+
+      .cart-item img {
+        width: 60px;
+        height: 60px;
+        object-fit: cover;
+        border-radius: 5px;
+      }
+
+      .cart-item-info {
+        flex-grow: 1;
+      }
+
+      .cart-item-title {
+        font-weight: bold;
+        margin-bottom: 5px;
+      }
+
+      .cart-item-price {
+        color: #ff5722;
+        font-size: 14px;
+      }
+
+      .cart-qty-controls {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .cart-qty-btn {
+        background: #eee;
+        border: none;
+        padding: 5px 10px;
+        cursor: pointer;
+        border-radius: 3px;
+        font-weight: bold;
+      }
+
+      .cart-qty-btn:hover {
+        background: #ddd;
+      }
+
+      .cart-remove {
+        color: red;
+        cursor: pointer;
+        font-size: 14px;
+        text-decoration: underline;
+      }
+
+      .cart-footer {
+        padding: 15px 20px;
+        border-top: 1px solid #eee;
+        background: #f9f9f9;
+        border-bottom-left-radius: 10px;
+        border-bottom-right-radius: 10px;
+      }
+
+      .cart-total {
+        display: flex;
+        justify-content: space-between;
+        font-size: 18px;
+        font-weight: bold;
+        margin-bottom: 15px;
+      }
+
+      .checkout-btn {
+        width: 100%;
+        background: #ff7f50;
+        color: white;
+        border: none;
+        padding: 12px;
+        font-size: 16px;
+        font-weight: bold;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: 0.3s;
+      }
+
+      .checkout-btn:hover {
+        background: #ff5722;
+      }
+
+      .empty-cart {
+        text-align: center;
+        color: #888;
+        padding: 20px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <header>
+      <nav>
+        <div class="logo">CUJO SHOP</div>
+        <div class="menu">
+          <a href="#" onclick="resetFilters()">Trang chủ</a>
+
+          <select onchange="filterByBreed(this.value)" class="nav-filter">
+            <option value="all">Chọn giống chó</option>
+            <option value="poodle">Poodle</option>
+            <option value="corgi">Corgi</option>
+            <option value="golden">Golden</option>
+            <option value="husky">Husky</option>
+            <option value="pug">Pug</option>
+            <option value="chihuahua">Chihuahua</option>
+          </select>
+
+          <select onchange="filterByBreed(this.value)" class="nav-filter">
+            <option value="all">Chọn giống mèo</option>
+            <option value="meoanh">Mèo Anh lông dài</option>
+            <option value="ragdoll">Ragdoll</option>
+            <option value="meoaln">Mèo Anh lông ngắn</option>
+            <option value="sphynx">Mèo Sphynx</option>
+            <option value="bengal">Mèo Bengal</option>
+          </select>
+
+          <select onchange="filterByBreed(this.value)" class="nav-filter">
+            <option value="all">Chọn giống chim</option>
+            <option value="vetxam">Vẹt xám úc</option>
+            <option value="sunconure">Sun conure</option>
+            <option value="chaomao">Chào mào</option>
+            <option value="yenhung">Yến Phụng</option>
+          </select>
+
+          <select onchange="filterByBreed(this.value)" class="nav-filter">
+            <option value="all">Phụ kiện</option>
+            <option value="thucan">Thức ăn</option>
+            <option value="dochoi">Đồ chơi</option>
+            <option value="vongco">Vòng cổ</option>
+            <option value="chuong">Chuồng/Balo</option>
+          </select>
+          <ul>
+            <li>
+              <a href="https://facebook.com/tenfanpage" target="_blank"
+                >Liên hệ</a
+              >
+            </li>
+          </ul>
+
+          <div class="cart-btn" onclick="toggleCart()">
+            🛒 Giỏ hàng <span class="cart-badge" id="cart-count">0</span>
+          </div>
+        </div>
+      </nav>
+    </header>
+
+    <div class="banner">Thiên đường thú cưng</div>
+
+    <div class="filter-container">
+      <strong style="color: #333">Lọc Chi Tiết: </strong>
+      <select id="filter-type" onchange="applyFilters()">
+        <option value="all">Tất cả danh mục</option>
+        <option value="dog">Chó</option>
+        <option value="cat">Mèo</option>
+        <option value="bird">Chim & Vẹt</option>
+        <option value="accessory">Phụ kiện</option>
+      </select>
+
+      <div class="price-slider-wrapper">
+        <label for="filter-price">Giá tối đa: </label>
+        <input
+          type="range"
+          id="filter-price"
+          min="0"
+          max="50000000"
+          step="500000"
+          value="50000000"
+          oninput="updatePriceLabel()"
+        />
+        <span id="price-val" style="color: #ff5722">50.000.000đ</span>
+      </div>
+
+      <button onclick="resetFilters()">Bỏ Lọc (Xem tất cả)</button>
+    </div>
+
+    <section class="section">
+      <h2>Chó bán chạy</h2>
+      <div class="products">
+        <div
+          class="card"
+          data-breed="poodle"
+          data-type="dog"
+          data-price="16000000"
+        >
+          <img
+            src="https://i.pinimg.com/1200x/4e/1b/24/4e1b2428938c26850705085df48574ef.jpg"
+          />
+          <h3>Poodle</h3>
+          <p>16.000.000đ</p>
+          <button class="add-to-cart-btn">Mua ngay</button>
+        </div>
+        <div
+          class="card"
+          data-breed="corgi"
+          data-type="dog"
+          data-price="16000000"
+        >
+          <img
+            src="https://i.pinimg.com/736x/a0/97/84/a09784bf4103cd7d5b5873e6fe1c4ba7.jpg"
+          />
+          <h3>Corgi</h3>
+          <p>16.000.000đ</p>
+          <button class="add-to-cart-btn">Mua ngay</button>
+        </div>
+        <div
+          class="card"
+          data-breed="golden"
+          data-type="dog"
+          data-price="14000000"
+        >
+          <img
+            src="https://i.pinimg.com/736x/86/ad/f9/86adf971c17679c189f7f9972585fd35.jpg"
+          />
+          <h3>Golden</h3>
+          <p>14.000.000đ</p>
+          <button class="add-to-cart-btn">Mua ngay</button>
+        </div>
+        <div
+          class="card"
+          data-breed="husky"
+          data-type="dog"
+          data-price="18000000"
+        >
+          <img
+            src="https://i.pinimg.com/736x/6e/6d/c1/6e6dc19c2e9076fbbde2883bf2b9bc02.jpg"
+          />
+          <h3>Husky</h3>
+          <p>18.000.000đ</p>
+          <button class="add-to-cart-btn">Mua ngay</button>
+        </div>
+        <div
+          class="card"
+          data-breed="pug"
+          data-type="dog"
+          data-price="12000000"
+        >
+          <img src="chopug.png" type="image/png" />
+          <h3>Pug</h3>
+          <p>12.000.000đ</p>
+          <button class="add-to-cart-btn">Mua ngay</button>
+        </div>
+        <div
+          class="card"
+          data-breed="chihuahua"
+          data-type="dog"
+          data-price="8000000"
+        >
+          <img src="chochihuahua.png" type="image/png" />
+          <h3>Chihuahua</h3>
+          <p>8.000.000đ</p>
+          <button class="add-to-cart-btn">Mua ngay</button>
+        </div>
+        <div
+          class="card"
+          data-breed="bullphap"
+          data-type="dog"
+          data-price="25000000"
+        >
+          <img src="chobullphap.png" />
+          <h3>Bull Pháp</h3>
+          <p>25.000.000đ</p>
+          <button class="add-to-cart-btn">Mua ngay</button>
+        </div>
+        <div
+          class="card"
+          data-breed="shiba"
+          data-type="dog"
+          data-price="22000000"
+        >
+          <img src="choshibainu.png" />
+          <h3>Shiba Inu</h3>
+          <p>22.000.000đ</p>
+          <button class="add-to-cart-btn">Mua ngay</button>
+        </div>
+        <div
+          class="card"
+          data-breed="samoyed"
+          data-type="dog"
+          data-price="19000000"
+        >
+          <img src="chosamoyed.png" />
+          <h3>Samoyed</h3>
+          <p>19.000.000đ</p>
+          <button class="add-to-cart-btn">Mua ngay</button>
+        </div>
+        <div
+          class="card"
+          data-breed="alaska"
+          data-type="dog"
+          data-price="20000000"
+        >
+          <img src="choalaska.png" />
+          <h3>Alaska</h3>
+          <p>20.000.000đ</p>
+          <button class="add-to-cart-btn">Mua ngay</button>
+        </div>
+        <div
+          class="card"
+          data-breed="phocsoc"
+          data-type="dog"
+          data-price="9000000"
+        >
+          <img src="chophocsoc.png" />
+          <h3>Phốc Sóc</h3>
+          <p>9.000.000đ</p>
+          <button class="add-to-cart-btn">Mua ngay</button>
+        </div>
+        <div
+          class="card"
+          data-breed="doberman"
+          data-type="dog"
+          data-price="15000000"
+        >
+          <img src="doberman.png" />
+          <h3>Doberman</h3>
+          <p>15.000.000đ</p>
+          <button class="add-to-cart-btn">Mua ngay</button>
+        </div>
+        <div
+          class="card"
+          data-breed="pitbull"
+          data-type="dog"
+          data-price="11000000"
+        >
+          <img src="chopitbull.png" />
+          <h3>Pitbull</h3>
+          <p>11.000.000đ</p>
+          <button class="add-to-cart-btn">Mua ngay</button>
+        </div>
+        <div
+          class="card"
+          data-breed="becgie"
+          data-type="dog"
+          data-price="13000000"
+        >
+          <img src="chobecgie.png" />
+          <h3>Becgie</h3>
+          <p>13.000.000đ</p>
+          <button class="add-to-cart-btn">Mua ngay</button>
+        </div>
+        <div
+          class="card"
+          data-breed="beagle"
+          data-type="dog"
+          data-price="10000000"
+        >
+          <img src="chobeagle.png" />
+          <h3>Beagle</h3>
+          <p>10.000.000đ</p>
+          <button class="add-to-cart-btn">Mua ngay</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Mèo nổi bật</h2>
+      <div class="products">
+        <div
+          class="card"
+          data-breed="meoanh"
+          data-type="cat"
+          data-price="30000000"
+        >
+          <img
+            src="https://i.pinimg.com/736x/5c/3f/82/5c3f82c41b4e64fd7ef5fe8c6c2444d3.jpg"
+          />
+          <h3>Mèo Anh lông dài</h3>
+          <p>30.000.000đ</p>
+          <button class="add-to-cart-btn">Mua ngay</button>
+        </div>
+        <div
+          class="card"
+          data-breed="ragdoll"
+          data-type="cat"
+          data-price="18000000"
+        >
+          <img
+            src="https://i.pinimg.com/736x/2b/a5/19/2ba5191bc7c04e918d493fe5959fedaa.jpg"
+          />
+          <h3>Ragdoll</h3>
+          <p>18.000.000đ</p>
+          <button class="add-to-cart-btn">Mua ngay</button>
+        </div>
+        <div
+          class="card"
+          data-breed="meoaln"
+          data-type="cat"
+          data-price="12000000"
+        >
+          <img src="meoaln.png" />
+          <h3>Mèo ALN</h3>
+          <p>12.000.000đ</p>
+          <button class="add-to-cart-btn">Mua ngay</button>
+        </div>
+        <div
+          class="card"
+          data-breed="batu"
+          data-type="cat"
+          data-price="15000000"
+        >
+          <img src="meobatu.png" />
+          <h3>Mèo Ba Tư</h3>
+          <p>15.000.000đ</p>
+          <button class="add-to-cart-btn">Mua ngay</button>
+        </div>
+        <div
+          class="card"
+          data-breed="sphynx"
+          data-type="cat"
+          data-price="25000000"
+        >
+          <img src="meosphynx.png" />
+          <h3>Mèo Sphynx</h3>
+          <p>25.000.000đ</p>
+          <button class="add-to-cart-btn">Mua ngay</button>
+        </div>
+        <div
+          class="card"
+          data-breed="xiem"
+          data-type="cat"
+          data-price="8000000"
+        >
+          <img src="meoxiem.png" />
+          <h3>Mèo Xiêm</h3>
+          <p>8.000.000đ</p>
+          <button class="add-to-cart-btn">Mua ngay</button>
+        </div>
+        <div
+          class="card"
+          data-breed="scottish"
+          data-type="cat"
+          data-price="14000000"
+        >
+          <img src="meosf.png" />
+          <h3>Mèo Scottish Fold</h3>
+          <p>14.000.000đ</p>
+          <button class="add-to-cart-btn">Mua ngay</button>
+        </div>
+        <div
+          class="card"
+          data-breed="munchkin"
+          data-type="cat"
+          data-price="20000000"
+        >
+          <img src="meomunchkin.png" />
+          <h3>Mèo Munchkin</h3>
+          <p>20.000.000đ</p>
+          <button class="add-to-cart-btn">Mua ngay</button>
+        </div>
+        <div
+          class="card"
+          data-breed="bengal"
+          data-type="cat"
+          data-price="22000000"
+        >
+          <img src="meobengal.png" />
+          <h3>Mèo Bengal</h3>
+          <p>22.000.000đ</p>
+          <button class="add-to-cart-btn">Mua ngay</button>
+        </div>
+        <div
+          class="card"
+          data-breed="mainecoon"
+          data-type="cat"
+          data-price="28000000"
+        >
+          <img src="meomc.png" />
+          <h3>Mèo Maine Coon</h3>
+          <p>28.000.000đ</p>
+          <button class="add-to-cart-btn">Mua ngay</button>
+        </div>
+        <div
+          class="card"
+          data-breed="meonga"
+          data-type="cat"
+          data-price="16000000"
+        >
+          <img src="meonga.png" />
+          <h3>Mèo Nga</h3>
+          <p>16.000.000đ</p>
+          <button class="add-to-cart-btn">Mua ngay</button>
+        </div>
+        <div
+          class="card"
+          data-breed="meomuop"
+          data-type="cat"
+          data-price="500000"
+        >
+          <img src="meomuop.png" />
+          <h3>Mèo Mướp</h3>
+          <p>500.000đ</p>
+          <button class="add-to-cart-btn">Mua ngay</button>
+        </div>
+        <div
+          class="card"
+          data-breed="meoden"
+          data-type="cat"
+          data-price="800000"
+        >
+          <img src="meoden.png" />
+          <h3>Mèo Đen</h3>
+          <p>800.000đ</p>
+          <button class="add-to-cart-btn">Mua ngay</button>
+        </div>
+        <div
+          class="card"
+          data-breed="meotamthe"
+          data-type="cat"
+          data-price="33000000"
+        >
+          <img src="meotamthe.png" />
+          <h3>Mèo Tam Thể</h3>
+          <p>33.000.000đ</p>
+          <button class="add-to-cart-btn">Mua ngay</button>
+        </div>
+        <div
+          class="card"
+          data-breed="rungnauy"
+          data-type="cat"
+          data-price="18000000"
+        >
+          <img src="meorungnauy.png" />
+          <h3>Mèo Rừng Na Uy</h3>
+          <p>18.000.000đ</p>
+          <button class="add-to-cart-btn">Mua ngay</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Chim & Vẹt nổi bật</h2>
+      <div class="products">
+        <div
+          class="card"
+          data-breed="vetxam"
+          data-type="bird"
+          data-price="7540000"
+        >
+          <img
+            src="https://i.pinimg.com/736x/71/6c/16/716c16eb52313689cc425e9e9361794a.jpg"
+          />
+          <h3>Vẹt xám úc</h3>
+          <p>7.540.000đ</p>
+          <button class="add-to-cart-btn">Mua ngay</button>
+        </div>
+        <div
+          class="card"
+          data-breed="sunconure"
+          data-type="bird"
+          data-price="3000000"
+        >
+          <img
+            src="https://i.pinimg.com/736x/c1/e7/ab/c1e7ab4fbe941cdf38e5acfe20fcb5f2.jpg"
+          />
+          <h3>Sun conure</h3>
+          <p>3.000.000đ</p>
+          <button class="add-to-cart-btn">Mua ngay</button>
+        </div>
+        <div
+          class="card"
+          data-breed="quaker"
+          data-type="bird"
+          data-price="6520000"
+        >
+          <img
+            src="https://i.pinimg.com/736x/30/20/08/3020080f91088aeee41cba09c9bd587a.jpg"
+          />
+          <h3>Vẹt Quaker</h3>
+          <p>6.520.000đ</p>
+          <button class="add-to-cart-btn">Mua ngay</button>
+        </div>
+        <div
+          class="card"
+          data-breed="vetcute"
+          data-type="bird"
+          data-price="15000000"
+        >
+          <img
+            src="https://i.pinimg.com/736x/b0/71/bd/b071bdab6b942e80ba2dcf75d42ae4ed.jpg"
+          />
+          <h3>Vẹt cute (Amazon)</h3>
+          <p>15.000.000đ</p>
+          <button class="add-to-cart-btn">Mua ngay</button>
+        </div>
+        <div
+          class="card"
+          data-breed="macaw"
+          data-type="bird"
+          data-price="45000000"
+        >
+          <img src="vetmacaw.png" />
+          <h3>Vẹt Macaw</h3>
+          <p>45.000.000đ</p>
+          <button class="add-to-cart-btn">Mua ngay</button>
+        </div>
+        <div
+          class="card"
+          data-breed="cockatoo"
+          data-type="bird"
+          data-price="25000000"
+        >
+          <img src="vetcockkatoo.png" />
+          <h3>Vẹt Cockatoo</h3>
+          <p>25.000.000đ</p>
+          <button class="add-to-cart-btn">Mua ngay</button>
+        </div>
+        <div
+          class="card"
+          data-breed="yenphung"
+          data-type="bird"
+          data-price="200000"
+        >
+          <img src="yenphung.png" />
+          <h3>Yến Phụng</h3>
+          <p>200.000đ</p>
+          <button class="add-to-cart-btn">Mua ngay</button>
+        </div>
+        <div
+          class="card"
+          data-breed="chaomao"
+          data-type="bird"
+          data-price="800000"
+        >
+          <img src="chaomao.png" />
+          <h3>Chim Chào Mào</h3>
+          <p>800.000đ</p>
+          <button class="add-to-cart-btn">Mua ngay</button>
+        </div>
+        <div
+          class="card"
+          data-breed="hoami"
+          data-type="bird"
+          data-price="1200000"
+        >
+          <img src="hoami.png" />
+          <h3>Chim Họa Mi</h3>
+          <p>1.200.000đ</p>
+          <button class="add-to-cart-btn">Mua ngay</button>
+        </div>
+        <div
+          class="card"
+          data-breed="vanhkhuyen"
+          data-type="bird"
+          data-price="400000"
+        >
+          <img src="vanhkhuyen.png" />
+          <h3>Chim Vành Khuyên</h3>
+          <p>400.000đ</p>
+          <button class="add-to-cart-btn">Mua ngay</button>
+        </div>
+        <div
+          class="card"
+          data-breed="cugay"
+          data-type="bird"
+          data-price="500000"
+        >
+          <img src="cugay.png" />
+          <h3>Chim Cu Gáy</h3>
+          <p>500.000đ</p>
+          <button class="add-to-cart-btn">Mua ngay</button>
+        </div>
+        <div
+          class="card"
+          data-breed="chichchoe"
+          data-type="bird"
+          data-price="600000"
+        >
+          <img src="chichchoe.png" />
+          <h3>Chim Chích Chòe</h3>
+          <p>600.000đ</p>
+          <button class="add-to-cart-btn">Mua ngay</button>
+        </div>
+        <div
+          class="card"
+          data-breed="saobietnoi"
+          data-type="bird"
+          data-price="350000"
+        >
+          <img src="saobtnoi.png" />
+          <h3>Chim Sáo Biết Nói</h3>
+          <p>350.000đ</p>
+          <button class="add-to-cart-btn">Mua ngay</button>
+        </div>
+        <div
+          class="card"
+          data-breed="hoangyen"
+          data-type="bird"
+          data-price="900000"
+        >
+          <img src="hoangyen.png" />
+          <h3>Chim Hoàng Yến</h3>
+          <p>900.000đ</p>
+          <button class="add-to-cart-btn">Mua ngay</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Phụ kiện thú cưng</h2>
+      <div class="products">
+        <div
+          class="card"
+          data-breed="thucan"
+          data-type="accessory"
+          data-price="200000"
+        >
+          <img
+            src="https://i.pinimg.com/736x/f0/3b/49/f03b49b67fa8ab4152cceead7c1b42ca.jpg"
+          />
+          <h3>Thức ăn chó mèo</h3>
+          <p>200.000đ</p>
+          <button class="add-to-cart-btn">Mua ngay</button>
+        </div>
+        <div
+          class="card"
+          data-breed="dochoi"
+          data-type="accessory"
+          data-price="120000"
+        >
+          <img
+            src="https://i.pinimg.com/1200x/6e/72/97/6e7297ac1769cc649120ae88c5264a23.jpg"
+          />
+          <h3>Đồ chơi thú cưng</h3>
+          <p>120.000đ</p>
+          <button class="add-to-cart-btn">Mua ngay</button>
+        </div>
+        <div
+          class="card"
+          data-breed="vongco"
+          data-type="accessory"
+          data-price="90000"
+        >
+          <img
+            src="https://i.pinimg.com/1200x/e0/6f/7c/e06f7ca56a7ea6246b42a6789121e0ad.jpg"
+          />
+          <h3>Vòng cổ</h3>
+          <p>90.000đ</p>
+          <button class="add-to-cart-btn">Mua ngay</button>
+        </div>
+        <div
+          class="card"
+          data-breed="catvesinh"
+          data-type="accessory"
+          data-price="150000"
+        >
+          <img src="catvs.png" />
+          <h3>Cát vệ sinh</h3>
+          <p>150.000đ</p>
+          <button class="add-to-cart-btn">Mua ngay</button>
+        </div>
+        <div
+          class="card"
+          data-breed="chuong"
+          data-type="accessory"
+          data-price="350000"
+        >
+          <img src="balo.png" />
+          <h3>Balo phi hành gia</h3>
+          <p>350.000đ</p>
+          <button class="add-to-cart-btn">Mua ngay</button>
+        </div>
+        <div
+          class="card"
+          data-breed="nemngu"
+          data-type="accessory"
+          data-price="280000"
+        >
+          <img src="nem.png" />
+          <h3>Nệm ngủ êm ái</h3>
+          <p>280.000đ</p>
+          <button class="add-to-cart-btn">Mua ngay</button>
+        </div>
+        <div
+          class="card"
+          data-breed="batan"
+          data-type="accessory"
+          data-price="85000"
+        >
+          <img src="bat.png" />
+          <h3>Bát ăn chống nghẹn</h3>
+          <p>85.000đ</p>
+          <button class="add-to-cart-btn">Mua ngay</button>
+        </div>
+        <div
+          class="card"
+          data-breed="luoc"
+          data-type="accessory"
+          data-price="60000"
+        >
+          <img src="luotchailong.png" />
+          <h3>Lược chải lông</h3>
+          <p>60.000đ</p>
+          <button class="add-to-cart-btn">Mua ngay</button>
+        </div>
+        <div
+          class="card"
+          data-breed="suatam"
+          data-type="accessory"
+          data-price="180000"
+        >
+          <img src="suatam.png" />
+          <h3>Sữa tắm chó mèo</h3>
+          <p>180.000đ</p>
+          <button class="add-to-cart-btn">Mua ngay</button>
+        </div>
+        <div
+          class="card"
+          data-breed="xitkhumui"
+          data-type="accessory"
+          data-price="110000"
+        >
+          <img src="xitkhumui.png" />
+          <h3>Xịt khử mùi</h3>
+          <p>110.000đ</p>
+          <button class="add-to-cart-btn">Mua ngay</button>
+        </div>
+        <div
+          class="card"
+          data-breed="catmong"
+          data-type="accessory"
+          data-price="45000"
+        >
+          <img src="kim.png" />
+          <h3>Kìm cắt móng</h3>
+          <p>45.000đ</p>
+          <button class="add-to-cart-btn">Mua ngay</button>
+        </div>
+        <div
+          class="card"
+          data-breed="chuong"
+          data-type="accessory"
+          data-price="450000"
+        >
+          <img src="chuong.png" />
+          <h3>Chuồng sắt gập</h3>
+          <p>450.000đ</p>
+          <button class="add-to-cart-btn">Mua ngay</button>
+        </div>
+        <div
+          class="card"
+          data-breed="supthuong"
+          data-type="accessory"
+          data-price="55000"
+        >
+          <img src="supthuong.png" />
+          <h3>Súp thưởng (Gói)</h3>
+          <p>55.000đ</p>
+          <button class="add-to-cart-btn">Mua ngay</button>
+        </div>
+        <div
+          class="card"
+          data-breed="dochoi"
+          data-type="accessory"
+          data-price="35000"
+        >
+          <img src="cancau.png" />
+          <h3>Đồ chơi cần câu</h3>
+          <p>35.000đ</p>
+          <button class="add-to-cart-btn">Mua ngay</button>
+        </div>
+        <div
+          class="card"
+          data-breed="xuonggam"
+          data-type="accessory"
+          data-price="75000"
+        >
+          <img src="xuong.png" />
+          <h3>Xương gặm sạch răng</h3>
+          <p>75.000đ</p>
+          <button class="add-to-cart-btn">Mua ngay</button>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <div class="container">
+        <div class="footer-content">
+          <div class="footer-section">
+            <h3>PetShop</h3>
+            <p>
+              <i class="fas fa-map-marker-alt"></i> số 6 Hoàng Hoa Thám, Phường
+              7, Quận Bình Thạnh, Thành phố Hồ Chí Minh
+            </p>
+            <p><i class="fas fa-phone"></i> 0909976091</p>
+          </div>
+
+          <div class="footer-section">
+            <h3>Hỗ trợ khách hàng</h3>
+            <a href="#">Chính sách vận chuyển</a>
+            <a href="#">Chính sách đổi trả</a>
+            <a href="#">Câu hỏi thường gặp</a>
+            <a href="#">Hướng dẫn mua hàng</a>
+          </div>
+
+          <div class="footer-section">
+            <h3>Theo dõi chúng tôi</h3>
+            <p>Kết nối với chúng tôi qua mạng xã hội</p>
+
+            <div class="social-icons">
+              <a
+                href="https://www.facebook.com/profile.php?id=61583670255906"
+                target="_blank"
+                title="Facebook"
+              >
+                <i class="fab fa-facebook-f"></i>
+              </a>
+            </div>
+
+            <div style="margin-top: 15px; font-size: 14px; color: #bdc3c7">
+              <p>Liên hệ trực tiếp:</p>
+              <p>
+                <i class="fab fa-facebook"></i> Facebook:
+                <a
+                  href="https://www.facebook.com/profile.php?id=61583670255906"
+                  target="_blank"
+                  style="color: #3498db"
+                  >cujoshop</a
+                >
+              </p>
+              <p>
+                <i class="fab fa-instagram"></i> Instagram:
+                <a
+                  href="https://www.instagram.com/leenhan.2802/"
+                  target="_blank"
+                  style="color: #e84393"
+                  >cujoshop</a
+                >
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="copyright">&copy; 2026 PetShop</div>
+      </div>
+
+      <div
+        style="
+          position: fixed;
+          bottom: 20px;
+          right: 20px;
+          cursor: pointer;
+          text-align: center;
+          z-index: 900;
+        "
+        onclick="window.location.href = 'tel:0938078242'"
+      >
+        <div
+          style="
+            background-color: #0068ff;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+          "
+        >
+          <div
+            style="
+              color: white;
+              font-size: 24px;
+              font-weight: bold;
+              line-height: 1;
+            "
+          >
+            Z
+          </div>
+          <div
+            style="
+              color: white;
+              font-size: 8px;
+              font-weight: bold;
+              letter-spacing: 0.5px;
+            "
+          >
+            TƯ VẤN
+          </div>
+        </div>
+        <div
+          style="
+            background-color: white;
+            border-radius: 12px;
+            padding: 4px 8px;
+            font-size: 11px;
+            font-weight: bold;
+            color: #0068ff;
+            margin-top: 5px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+          "
+        >
+          📞 GỌI NGAY
+        </div>
+      </div>
+    </footer>
+
+    <div id="cart-overlay" onclick="toggleCart()"></div>
+    <div id="cart-modal">
+      <div class="cart-header">
+        <h2>Giỏ hàng của bạn</h2>
+        <span class="close-btn" onclick="toggleCart()">&times;</span>
+      </div>
+      <div class="cart-body" id="cart-items">
+        <div class="empty-cart">Giỏ hàng đang trống.</div>
+      </div>
+      <div class="cart-footer">
+        <div class="cart-total">
+          <span>Tổng thanh toán:</span>
+          <span id="cart-total-price" style="color: #ff5722">0đ</span>
+        </div>
+        <button class="checkout-btn" onclick="checkout()">
+          Tiến hành thanh toán
+        </button>
+      </div>
+    </div>
+
+    <script>
+      let currentBreedFilter = "all";
+
+      // --- LOGIC BỘ LỌC CŨ GIỮ NGUYÊN ---
+      function filterByBreed(breed) {
+        currentBreedFilter = breed;
+        document.querySelectorAll(".nav-filter").forEach((sel) => {
+          if (sel.value !== breed && sel.value !== "all") {
+            sel.value = "all";
+          }
+        });
+        document.getElementById("filter-type").value = "all";
+        applyFilters();
+      }
+
+      function updatePriceLabel() {
+        let price = document.getElementById("filter-price").value;
+        document.getElementById("price-val").innerText =
+          new Intl.NumberFormat("vi-VN").format(price) + "đ";
+        applyFilters();
+      }
+
+      function resetFilters() {
+        currentBreedFilter = "all";
+        document.getElementById("filter-type").value = "all";
+        document.getElementById("filter-price").value = 50000000;
+        document
+          .querySelectorAll(".nav-filter")
+          .forEach((sel) => (sel.value = "all"));
+        updatePriceLabel();
+      }
+
+      function applyFilters() {
+        let typeFilter = document.getElementById("filter-type").value;
+        let maxPrice = parseInt(document.getElementById("filter-price").value);
+        let cards = document.querySelectorAll(".card");
+
+        cards.forEach((card) => {
+          let cardType = card.getAttribute("data-type");
+          let cardBreed = card.getAttribute("data-breed");
+          let cardPrice = parseInt(card.getAttribute("data-price"));
+
+          let isVisible = true;
+          if (currentBreedFilter !== "all" && cardBreed !== currentBreedFilter)
+            isVisible = false;
+          if (typeFilter !== "all" && cardType !== typeFilter)
+            isVisible = false;
+          if (cardPrice > maxPrice) isVisible = false;
+
+          card.style.display = isVisible ? "block" : "none";
+        });
+      }
+
+      // --- LOGIC GIỎ HÀNG THÊM MỚI ---
+      let cart = []; // Mảng chứa dữ liệu giỏ hàng
+
+      // Gắn sự kiện click cho toàn bộ nút "Mua ngay"
+      document.addEventListener("DOMContentLoaded", () => {
+        const addToCartBtns = document.querySelectorAll(".add-to-cart-btn");
+        addToCartBtns.forEach((btn) => {
+          btn.addEventListener("click", function () {
+            // Lấy thẻ cha (.card) để trích xuất thông tin
+            const card = this.closest(".card");
+            const name = card.querySelector("h3").innerText;
+            const price = parseInt(card.getAttribute("data-price"));
+            const img = card.querySelector("img").src;
+
+            addToCart(name, price, img);
+          });
+        });
+      });
+
+      // Thêm sản phẩm vào giỏ
+      function addToCart(name, price, img) {
+        const existingItem = cart.find((item) => item.name === name);
+        if (existingItem) {
+          existingItem.quantity += 1; // Nếu đã có, tăng số lượng
+        } else {
+          cart.push({ name, price, img, quantity: 1 }); // Thêm mới
+        }
+        updateCartUI();
+
+        // Hiệu ứng / Thông báo nhỏ nhắn cho user biết
+        alert(`Đã thêm ${name} vào giỏ hàng!`);
+      }
+
+      // Xóa 1 loại sản phẩm khỏi giỏ
+      function removeFromCart(index) {
+        cart.splice(index, 1);
+        updateCartUI();
+      }
+
+      // Thay đổi số lượng (+ / -)
+      function changeQuantity(index, delta) {
+        cart[index].quantity += delta;
+        if (cart[index].quantity <= 0) {
+          removeFromCart(index);
+        } else {
+          updateCartUI();
+        }
+      }
+
+      // Cập nhật giao diện giỏ hàng
+      function updateCartUI() {
+        const cartItemsContainer = document.getElementById("cart-items");
+        const cartCount = document.getElementById("cart-count");
+        const cartTotalPrice = document.getElementById("cart-total-price");
+
+        // Cập nhật số lượng trên icon Header
+        const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+        cartCount.innerText = totalItems;
+
+        // Render HTML các món hàng
+        if (cart.length === 0) {
+          cartItemsContainer.innerHTML =
+            '<div class="empty-cart">Giỏ hàng đang trống. Hãy thêm thú cưng nhé!</div>';
+          cartTotalPrice.innerText = "0đ";
+          return;
+        }
+
+        let html = "";
+        let totalPrice = 0;
+
+        cart.forEach((item, index) => {
+          totalPrice += item.price * item.quantity;
+          html += `
+            <div class="cart-item">
+              <img src="${item.img}" alt="${item.name}">
+              <div class="cart-item-info">
+                <div class="cart-item-title">${item.name}</div>
+                <div class="cart-item-price">${new Intl.NumberFormat("vi-VN").format(item.price)}đ</div>
+                <div class="cart-remove" onclick="removeFromCart(${index})">Xóa</div>
+              </div>
+              <div class="cart-qty-controls">
+                <button class="cart-qty-btn" onclick="changeQuantity(${index}, -1)">-</button>
+                <span>${item.quantity}</span>
+                <button class="cart-qty-btn" onclick="changeQuantity(${index}, 1)">+</button>
+              </div>
+            </div>
+          `;
+        });
+
+        cartItemsContainer.innerHTML = html;
+        cartTotalPrice.innerText =
+          new Intl.NumberFormat("vi-VN").format(totalPrice) + "đ";
+      }
+
+      // Ẩn/Hiện Modal Giỏ Hàng
+      function toggleCart() {
+        const modal = document.getElementById("cart-modal");
+        const overlay = document.getElementById("cart-overlay");
+
+        if (modal.style.display === "flex") {
+          modal.style.display = "none";
+          overlay.style.display = "none";
+        } else {
+          modal.style.display = "flex";
+          overlay.style.display = "block";
+        }
+      }
+
+      // Nút thanh toán tượng trưng
+      function checkout() {
+        if (cart.length === 0) {
+          alert("Giỏ hàng trống! Vui lòng chọn sản phẩm.");
+          return;
+        }
+        alert(
+          "Cảm ơn bạn đã đặt hàng! Cujo Shop sẽ liên hệ bạn trong thời gian sớm nhất.",
+        );
+        cart = []; // Reset giỏ hàng sau thanh toán
+        updateCartUI();
+        toggleCart();
+      }
+    </script>
+  </body>
+</html>
